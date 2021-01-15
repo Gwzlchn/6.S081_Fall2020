@@ -295,6 +295,9 @@ fork(void)
 
   np->state = RUNNABLE;
 
+  // Child trace mask inherit from parent
+  np->mask = p->mask;
+
   release(&np->lock);
 
   return pid;
@@ -692,4 +695,20 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+
+uint64
+get_unused_proc(void)
+{
+  uint32 cnt = 0;
+  uint i = 0;
+  acquire(&pid_lock);
+  for(; i< NPROC; i++){
+    if(proc[i].state != UNUSED){
+      cnt++;
+    }
+  }
+  release(&pid_lock);
+  return cnt;
 }

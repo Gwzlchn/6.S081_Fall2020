@@ -98,7 +98,7 @@ void testproc() {
   
   sinfo(&info);
   nproc = info.nproc;
-
+  printf("parent pid :%d, current unused proc number = %d\n", getpid(), nproc);
   pid = fork();
   if(pid < 0){
     printf("sysinfotest: fork failed\n");
@@ -108,6 +108,8 @@ void testproc() {
     sinfo(&info);
     if(info.nproc != nproc+1) {
       printf("sysinfotest: FAIL nproc is %d instead of %d\n", info.nproc, nproc+1);
+      printf("this is from child proc\n");
+      printf("child pid :%d,current unused proc number = %d\n", getpid(), info.nproc);
       exit(1);
     }
     exit(0);
@@ -115,7 +117,6 @@ void testproc() {
   wait(&status);
   sinfo(&info);
   if(info.nproc != nproc) {
-      printf("sysinfotest: FAIL nproc is %d instead of %d\n", info.nproc, nproc);
       exit(1);
   }
 }

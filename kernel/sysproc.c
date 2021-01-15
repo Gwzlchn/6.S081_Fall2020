@@ -6,6 +6,8 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+
 
 uint64
 sys_exit(void)
@@ -94,4 +96,42 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_trace(void)
+{
+  int mask;
+  
+  if(argint(0, &mask) < 0){
+    return -1;
+  }
+  myproc()->mask = mask;
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 info_addr;
+  // sysinfo 第一个参数是 struct sysinfo* 地址，取进来。
+  if(argaddr(0, &info_addr) < 0){
+    return -1;
+  }
+  
+  uint64 current_system_proc_num = get_unused_proc();
+  uint64 current_system_free_mem = get_free_mem();
+  struct sysinfo current_system_info = 
+  {
+    .freemem = current_system_free_mem,
+    .nproc = current_system_proc_num
+  };
+  if(copyout(myproc()->pagetable, 
+            info_addr, 
+            (char *)&current_system_info, 
+            sizeof(current_system_info)) < 0)
+  {
+    return -1;
+  }
+  return 0;
 }
