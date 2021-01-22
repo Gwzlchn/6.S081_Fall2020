@@ -120,6 +120,8 @@ found:
     release(&p->lock);
     return 0;
   }
+  // An empty kernel page table
+  p->kernel_pagetable = proc_pagetable(p);
 
   // Set up new context to start executing at forkret,
   // which returns to user space.

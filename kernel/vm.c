@@ -450,7 +450,7 @@ vmprint_helper(pagetable_t pagetable, uint depth)
 {
   
   for(int i=0;i<512;i++){
-    pte_t pte = pagetable[i];
+    pte_t pte = *(pagetable + i);
     if((pte & PTE_V) ){
       for(int j=0;j<depth;j++) printf(".. ");
       printf("..%d: pte %p pa %p\n",i, pte, PTE2PA(pte));
